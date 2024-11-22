@@ -3,53 +3,65 @@ const app = express();
 const port = 4000;
 
 const cors = require('cors');
-app.use(cors());
+app.use(cors());  // Allow cross-origin requests
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+  res.header("Access-Control-Allow-Origin", "*");  // Allow all origins
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");  // Allow specific HTTP methods
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");  // Allow certain headers
+  next();  // Proceed to the next middleware
 });
 
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));  // Parse URL-encoded data
+app.use(bodyParser.json());  // Parse JSON data
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://admin:admin@martinscluster.w5rtkz0.mongodb.net/DB14');
+mongoose.connect('mongodb+srv://admin:admin@martinscluster.w5rtkz0.mongodb.net/DB14');  // Connect to MongoDB
 
 const movieSchema = new mongoose.Schema({
-  title:String,
-  year:String,
-  poster:String
+  title: String,
+  year: String,
+  poster: String
 });
 
-const movieModel = new mongoose.model('myMovies',movieSchema);
+const movieModel = new mongoose.model('myMovies', movieSchema);
 
-app.get('/api/movies', async (req, res) => {
-    const movies = await movieModel.find({});
-    res.status(200).json({movies})
+// Get all movies
+app.get('/api/movies', async (_req, res) => {
+  const movies = await movieModel.find({});  // Fetch movies from DB
+  res.status(200).json({ movies });  // Send movies as JSON response
 });
 
-app.get('/api/movie/:id', async (req ,res)=>{
-  const movie = await movieModel.findById(req.params.id);
-  res.json(movie);
-})
+// Get movie by ID
+app.get('/api/movie/:id', async (req, res) => {  
+  let movie = await movieModel.findById(req.params.id);  // Find movie by ID
+  res.send(movie);  // Send the movie data back
+});
 
-app.post('/api/movies',async (req, res)=>{
-    console.log(req.body.title);
-    const {title, year, poster} = req.body;
+// Add a new movie
+app.post('/api/movies', async (req, res) => {
+  console.log(req.body.title);  // Log the title of the new movie
+  const { title, year, poster } = req.body;  // Get movie details
 
-    const newMovie = new movieModel({title, year, poster});
-    await newMovie.save();
+  const newMovie = new movieModel({ title, year, poster });  // Create a new movie
+  await newMovie.save();  // Save movie to DB
 
-    res.status(201).json({"message":"Movie Added!",Movie:newMovie});
-})
+  res.status(201).json({ "message": "Movie Added!", Movie: newMovie });  // Confirm movie added
+});
 
+// Update a movie by ID
+app.put('/api/movie/:id', async (req, res) => {  
+  let movie = await movieModel.findByIdAndUpdate(req.params.id, req.body, { new: true });  // Update movie data
+  res.send(movie);  // Send updated movie back
+});
+
+// Start the server
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);  // Server is live
 });
+
+
 
 // {
 //   "Title": "Avengers: Infinity War (server)",
