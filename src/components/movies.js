@@ -1,10 +1,17 @@
 import MovieItem from "./movieitem";
 
-const Movies = (props)=>{
-    return props.myMovies.map(
-        (movie)=>{
-            return <MovieItem mymovie={movie} key={movie._id} />
-        }
+function Movies(props) {
+    return (
+        <>
+            {/* Loop through movies and render each as a MovieItem */}
+            {props.myMovies.map((movie) => (
+                <MovieItem
+                    mymovie={movie} // Pass movie details
+                    key={movie._id} // Unique key for each movie
+                    Reload={props.ReloadData} // Function to refresh movie list
+                />
+            ))}
+        </>
     );
 }
 
