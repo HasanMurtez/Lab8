@@ -56,6 +56,13 @@ app.put('/api/movie/:id', async (req, res) => {
   res.send(movie);  // Send updated movie back
 });
 
+// deleating movie
+app.delete('/api/movie/:id', async  (req, res) => {
+  console.log('Deleting movie with ID:', req.params.id);
+  const movie = await movieModel.findByIdAndDelete(req.params.id);
+  res.status(200).send({ message: "Movie deleted successfully", movie });
+})
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);  // Server is live
